@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
 
 
 public class Server {
     private Vector<ClientHandler> clients;
     private AuthService authService;
+    private ExecutorService clientsExecutorService;
 
     public AuthService getAuthService() {
         return authService;
@@ -20,6 +22,7 @@ public class Server {
             throw new RuntimeException("Не удалось подключиться к БД");
         }
         authService = new DBAuthServise();
+        clientsExecutorService = Executors.newCachedThreadPool();
 
 
         ServerSocket server = null;
@@ -48,6 +51,10 @@ public class Server {
             }
         }
     }
+    public ExecutorService getClientsExecutorService() {
+        return clientsExecutorService;
+    }
+
 
     public void broadcastMsg(String nick, String msg) {
         for (ClientHandler c : clients) {
